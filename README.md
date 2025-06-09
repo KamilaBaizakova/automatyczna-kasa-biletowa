@@ -2,11 +2,14 @@
 title: "**Automatyczna kasa biletowa -- model architektury w języku
   AADL**"
 ---
-**Dane studenta
-Kamila Baizakova 
-baizakova@student.agh.edu.pl
+Dane studentaAdd commentMore actions
+* Imię i nazwisko:Kamila Baizakova
+* E-mail: baizakova@student.agh.edu.pl
 
-**2. Opis modelowanego systemu**
+     **2. Opis modelowanego systemu**
+Model przedstawia architekturę systemu automatycznej kasy biletowej zaprojektowanej w języku AADL (Architecture Analysis & Design Language). System umożliwia zakup biletów przez pasażera bez pomocy kasjera. Składa się z interfejsu użytkownika (ekran dotykowy, panel płatności), kontrolera przetwarzającego dane, modułu płatności, drukarki biletów oraz komponentów sprzętowych (procesor, pamięć, magistrala danych).
+
+
 
 **2.1. Opis ogólny**
 
