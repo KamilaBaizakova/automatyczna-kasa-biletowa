@@ -2,6 +2,9 @@
 title: "**Automatyczna kasa biletowa -- model architektury w języku
   AADL**"
 ---
+**Dane studenta
+Kamila Baizakova 
+baizakova@student.agh.edu.pl
 
 **2. Opis modelowanego systemu**
 
