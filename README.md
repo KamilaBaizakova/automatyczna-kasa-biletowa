@@ -8,20 +8,96 @@ title: "**Automatyczna kasa biletowa -- model architektury w języku
 **2.1. Opis ogólny**
 
 Model architektury AADL przedstawia uproszczoną automatykę stacjonarnej
-kasy biletowej, składającą się z czterech podstawowych komponentów:
+kasy biletowej, składającą się z 10 podstawowych komponentów:
 
-- **User_Interface (ui)** -- interfejs użytkownika z panelem dotykowym
-  do wyboru i potwierdzania parametrów biletu oraz do wyświetlania
-  komunikatów.
+### 1. `ui_dev` – TouchScreen (device)
+- **Porty:**
+  - `sel_out : out data port TicketRequest`
+  - `disp_in : in data port DisplayMessage`
+- **Opis:**  
+  Urządzenie wejściowe z ekranem dotykowym. Umożliwia użytkownikowi wybór trasy i rodzaju biletu. Odbiera komunikaty zwrotne (np. o statusie płatności, błędach) i przekazuje je na ekran.
 
-- **Ticket_Processor (tp)** -- jednostka przetwarzająca, która odbiera
-  żądania z interfejsu, zarządza logiką transakcji i steruje modułami
-  płatności oraz drukarki.
+---
 
-- **Payment_Unit (pay)** -- urządzenie odpowiedzialne za inicjację i
-  weryfikację operacji kartą płatniczą.
+### 2. `ui_proc` – UserInputProc (process)
+- **Porty:**
+  - `sel_in`, `sel_out` – przetwarza wybór użytkownika  
+  - `disp_out` – wysyła komunikaty do wyświetlacza  
+  - `pay_status_in` – odbiera status płatności  
+  - `log_out` – przekazuje logi do rejestratora
+- **Opis:**  
+  Logika interfejsu użytkownika. Przetwarza wybór biletu i przekazuje go dalej. Odbiera wyniki płatności i drukowania oraz przygotowuje komunikaty dla użytkownika.
 
-- **Printer (prt)** -- urządzenie drukujące papierowy bilet.
+---
+
+### 3. `card_dev` – CardReader (device)
+- **Porty:**
+  - `pay_out : out data port PaymentInfo`
+- **Opis:**  
+  Czytnik kart płatniczych. Wysyła dane o płatności (np. numer karty, potwierdzenie) do logiki przetwarzającej płatność.
+
+---
+
+### 4. `cash_dev` – CashAcceptor (device)
+- **Porty:**
+  - `pay_out : out data port PaymentInfo`
+- **Opis:**  
+  Urządzenie do przyjmowania gotówki. Przesyła informację o włożonych banknotach lub monetach do procesora płatności.
+
+---
+
+### 5. `pay_proc` – PaymentProc (process)
+- **Porty:**
+  - `pay1_in`, `pay2_in` – odbiera dane z czytnika kart i akceptora gotówki  
+  - `ticket_out` – generuje dane biletu  
+  - `pay_status_out` – przesyła status płatności  
+  - `log_out` – wysyła logi
+- **Opis:**  
+  Główna logika płatności. Przyjmuje dane płatnicze z dwóch źródeł, weryfikuje płatność i przesyła wynik do UI oraz dane biletu dalej.
+
+---
+
+### 6. `ticket_proc` – TicketProc (process)
+- **Porty:**
+  - `ticket_in` – odbiera dane biletu  
+  - `print_cmd_out` – generuje polecenie drukowania  
+  - `prt_status_in` – odbiera status drukowania  
+  - `log_out` – przesyła dane do logowania
+- **Opis:**  
+  Obsługuje proces przygotowania biletu do druku i reaguje na status wydruku. Rejestruje każde zdarzenie.
+
+---
+
+### 7. `prt_dev` – PrinterDevice (device)
+- **Porty:**
+  - `ticket_in`, `cmd_in`, `status_out`
+- **Opis:**  
+  Fizyczna drukarka. Odbiera dane biletu i polecenie drukowania, następnie zwraca status wykonania operacji (np. sukces, błąd, brak papieru).
+
+---
+
+### 8. `disp_dev` – DisplayDevice (device)
+- **Porty:**
+  - `msg_in : in data port DisplayMessage`
+- **Opis:**  
+  Zewnętrzny wyświetlacz pokazujący komunikaty (np. potwierdzenie płatności, błąd systemu, instrukcje).
+
+---
+
+### 9. `log_proc` – LoggerProc (process)
+- **Porty:**
+  - `log_in`, `log_out : event data port LogEntry`
+- **Opis:**  
+  Centralny komponent zbierający logi z UI, płatności i drukarki. Może filtrować, agregować lub po prostu przekazywać dalej.
+
+---
+
+### 10. `net_dev` – NetworkInterface (device)
+- **Porty:**
+  - `net_in : in event data port LogEntry`
+- **Opis:**  
+  Interfejs sieciowy do zdalnego przesyłania logów (np. do serwera administracyjnego). Finalny punkt w łańcuchu rejestrowania zdarzeń.
+
 
 Komponenty są połączone portami zdarzeń i danych w topologii „gwiazda":
 ui → tp →pay→ tp→ prt → tp. Model uwzględnia podstawowe przepływy
@@ -29,30 +105,58 @@ zdarzeń („wybór biletu", „polecenie płatności", „status płatności",
 „polecenie druku", „status druku") i stanowi bazę do dalszej analizy
 opóźnień (latency) oraz budżetu zasobów (CPU, pamięć, magistrala).
 
-**2.2. Opis z perspektywy użytkownika**
+**2.2. Opis działania z perspektywy użytkownika
 
-1.  **Wybór biletu**
+System automatycznej kasy biletowej działa w sposób intuicyjny i sekwencyjny. Poniżej przedstawiono krok po kroku, co dzieje się od momentu wejścia użytkownika w interakcję z ekranem aż do zakończenia transakcji:
 
-    - Użytkownik na panelu dotykowym wybiera trasę i typ biletu.
-      Interfejs wysyła sygnał sel_out do procesora.
+---
 
-2.  **Płatność**
+### 🔹 1. Wybór biletu
+- Użytkownik korzysta z **panelu dotykowego** (`ui_dev`) do wyboru typu biletu i trasy.
+- Wybrana opcja zostaje przekazana jako sygnał przez port `sel_out` do **logiki interfejsu** (`ui_proc`), która następnie przesyła to dalej do **modułu płatności** (`pay_proc`).
 
-    - Procesor, po otrzymaniu żądania, wysyła komendę pay_cmd_out do
-      modułu kart (pay_cmd_in).
+---
 
-    - Po autoryzacji karta zwraca sygnał pay_stat_out, który trafia do
-      procesora jako pay_stat_in.
+### 🔹 2. Autoryzacja płatności
+- **Procesor płatności (`pay_proc`)** odbiera żądanie i czeka na dane z:
+  - **czytnika kart (`card_dev`)**
+  - lub **akceptora gotówki (`cash_dev`)**
+- Odpowiednie informacje trafiają do portów `pay1_in` / `pay2_in`.
+- Po sprawdzeniu autoryzacji, `pay_proc`:
+  - wysyła sygnał `pay_status_out` do `ui_proc` (czy płatność się powiodła),
+  - oraz tworzy dane biletu i przesyła je do `ticket_proc`.
 
-3.  **Drukowanie**
+---
 
-    - Jeżeli płatność zakończy się sukcesem, procesor wysyła sygnał
-      prt_cmd_out do drukarki (prt_cmd_in).
+### 🔹 3. Drukowanie biletu
+- **Procesor biletu (`ticket_proc`)** odbiera dane biletu i generuje polecenie wydruku (`print_cmd_out`) dla **drukarki (`prt_dev`)**.
+- Po zakończeniu druku, drukarka odsyła `status_out` do `ticket_proc`, który:
+  - wysyła status dalej do `ui_proc`,
+  - loguje zdarzenie (np. druk zakończony sukcesem lub błąd).
 
-    - Drukarka, po wydaniu biletu, zgłasza prt_stat_out powrotnie do
-      procesora (prt_stat_in).
+---
 
-4.  **Obsługa błędów**
+### 🔹 4. Wyświetlanie komunikatów
+- **`ui_proc`** na podstawie otrzymanych statusów generuje odpowiednie komunikaty (`disp_out`), które są przesyłane do **wyświetlacza (`disp_dev`)**.
+- Użytkownik widzi informację o sukcesie, błędzie lub wymaganym działaniu (np. „brak papieru”).
+
+---
+
+### 🔹 5. Logowanie zdarzeń
+- W międzyczasie wszystkie istotne operacje (wybór, płatność, druk, błędy) są logowane.
+- Dane są przesyłane przez `log_out` z każdego procesu (`ui_proc`, `pay_proc`, `ticket_proc`) do **loggera (`log_proc`)**, który agreguje je i przekazuje do **interfejsu sieciowego (`net_dev`)**.
+
+---
+
+### 🎯 Efekt końcowy
+Użytkownik:
+- wybiera bilet → płaci → otrzymuje potwierdzenie i wydrukowany bilet,  
+a system:
+- rejestruje wszystko w logach,
+- wykrywa i obsługuje ewentualne błędy.
+
+
+  **Obsługa błędów**
 
     - W przypadku odrzucenia karty lub braku papieru w drukarce,
       procesor generuje odpowiedni komunikat zwrotny przez port msg_in i
@@ -61,29 +165,32 @@ opóźnień (latency) oraz budżetu zasobów (CPU, pamięć, magistrala).
 Cały cykl trwa od momentu wyboru biletu do wydruku i sygnalizacji
 zakończenia operacji.
 
-**3. Spis komponentów AADL z komentarzem**
 
-| **Komponent**             | **Typ** | **Interfejs (porty)**                                                                                                                                                                                                                                                                                                               | **Opis działania**                                                                                                                                  |
-|---------------------------|---------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
-| **ui : User_Interface**   | system  | \- **sel_out** : out event data port -- wysyła sygnał wybranego biletu- **msg_in** : in event data port -- odbiera komunikaty zwrotne                                                                                                                                                                                               | Ekran dotykowy wraz z logiką prezentowania dostępnych opcji i wyświetlania komunikatów o stanie systemu                                             |
-| **tp : Ticket_Processor** | process | \- **ui_req_in** : in event data port -- odbiera wybór z interfejsu użytkownika- **pay_cmd_out** : out event data port -- inicjuje płatność- **pay_stat_in** : in event data port -- odbiera status płatności- **prt_cmd_out** : out event data port -- inicjuje druk- **prt_stat_in** : in event data port -- odbiera status druku | Centralny proces sterujący kolejnością operacji: przyjmuje żądania od UI, kolejno uruchamia moduły płatności i druku oraz przetwarza ich odpowiedzi |
-| **pay : Payment_Unit**    | device  | \- **pay_cmd_in** : in event data port -- odbiera polecenie autoryzacji płatności- **pay_stat_out** : out event data port -- wysyła wynik autoryzacji                                                                                                                                                                               | Czytnik kart płatniczych, odpowiadający za komunikację z systemem bankowym i raportowanie wyniku                                                    |
-| **prt : Printer**         | device  | \- **prt_cmd_in** : in event data port -- odbiera polecenie wydruku biletu- **prt_stat_out** : out event data port -- wysyła status wydruku                                                                                                                                                                                         | Drukarka termiczna generująca papierowy bilet oraz raportująca zakończenie lub błąd operacji druku                                                  |
-| **Ticket_Machine**        | system  | -- bez własnych portów --                                                                                                                                                                                                                                                                                                           | System nadrzędny zawierający wszystkie subkomponenty i definiujący ich wzajemne połączenia                                                          |
+## 3. Spis komponentów AADL z komentarzem
+
+| **Komponent**             | **Typ**   | **Interfejs (porty)**                                                                                                                                                                                                                                                                                                               | **Opis działania**                                                                                                                                  |
+|---------------------------|-----------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+| **ui_dev : TouchScreen**  | device    | - `sel_out : out data port TicketRequest`  <br> - `disp_in : in data port DisplayMessage`                                                                                                                                                                                                                                          | Ekran dotykowy – umożliwia wybór biletu i odbiera komunikaty do wyświetlenia                                                                       |
+| **ui_proc : UserInputProc** | process | - `sel_in : in data port TicketRequest` <br> - `sel_out : out data port TicketRequest` <br> - `disp_out : out data port DisplayMessage` <br> - `pay_status_in : in data port PaymentStatus` <br> - `log_out : out event data port LogEntry`                                                 | Logika UI – przetwarza wybór, reaguje na statusy i generuje komunikaty                                                                             |
+| **card_dev : CardReader** | device    | - `pay_out : out data port PaymentInfo`                                                                                                                                                                                                                                                                                           | Czytnik kart płatniczych                                                                                                                            |
+| **cash_dev : CashAcceptor** | device  | - `pay_out : out data port PaymentInfo`                                                                                                                                                                                                                                                                                           | Akceptor gotówki                                                                                                                                    |
+| **pay_proc : PaymentProc** | process  | - `sel_in : in data port TicketRequest` <br> - `pay1_in/pay2_in : in data port PaymentInfo` <br> - `ticket_out : out data port TicketData` <br> - `pay_status_out : out data port PaymentStatus` <br> - `log_out : out event data port LogEntry`                                          | Obsługuje płatności, generuje bilety, informuje o wyniku i rejestruje operacje                                                                     |
+| **ticket_proc : TicketProc** | process | - `ticket_in : in data port TicketData` <br> - `prt_status_in : in data port PaymentStatus` <br> - `print_cmd_out : out data port PrintCommand` <br> - `log_out : out event data port LogEntry`                                                                                           | Obsługuje druk biletu, generuje polecenia i loguje status                                                                                           |
+| **prt_dev : PrinterDevice** | device | - `ticket_in : in data port TicketData` <br> - `cmd_in : in data port PrintCommand` <br> - `status_out : out data port PaymentStatus`                                                                                                                                                                                             | Drukarka – wykonuje druk na podstawie danych i zgłasza status                                                                                       |
+| **disp_dev : DisplayDevice** | device | - `msg_in : in data port DisplayMessage`                                                                                                                                                                                                                                                                                          | Wyświetlacz komunikatów tekstowych                                                                                                                  |
+| **log_proc : LoggerProc** | process   | - `log_in : in event data port LogEntry` <br> - `log_out : out event data port LogEntry`                                                                                                                                                                                                                                          | Agreguje logi z całego systemu i przekazuje je dalej                                                                                                |
+| **net_dev : NetworkInterface** | device | - `net_in : in event data port LogEntry`                                                                                                                                                                                                                                                                                          | Interfejs do przesyłania logów do systemu zewnętrznego                                                                                              |
+                                      |
 
 4\. Model -- rysunek
 
 ![Obraz zawierający tekst, diagram, zrzut ekranu, linia Zawartość
 wygenerowana przez sztuczną inteligencję może być
-niepoprawna.](media/image1.png){width="6.3in"
-height="2.857638888888889in"}
+niepoprawna.](IMG_0430.jpeg) podstawowa wersja 
 
-Rys. 1. Diagram instancji Ticket Machine
+## Rys. 1. Diagram instancji Ticket Machine (rozszerzona)
 
-![Obraz zawierający zrzut ekranu, komputer, oprogramowanie,
-Oprogramowanie multimedialne Zawartość wygenerowana przez sztuczną
-inteligencję może być niepoprawna.](media/image2.png){width="6.3in"
-height="2.5819444444444444in"}
+![Diagram instancji](TicketMachine%202/Untitled.png)
 
 Rys. 2. Raport spójności portów -- 0 niez 1
 
