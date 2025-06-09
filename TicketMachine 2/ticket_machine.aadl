@@ -1,0 +1,148 @@
+package ticket_machine_advanced
+public
+
+  ------------------------------------------------------------------
+  -- 1. DATA TYPES
+  ------------------------------------------------------------------
+  data TicketRequest    end TicketRequest;
+  data PaymentInfo      end PaymentInfo;
+  data TicketData       end TicketData;
+  data PaymentStatus    end PaymentStatus;
+  data PrintCommand     end PrintCommand;
+  data DisplayMessage   end DisplayMessage;
+  data LogEntry         end LogEntry;
+
+  ------------------------------------------------------------------
+  -- 2. BUSES
+  ------------------------------------------------------------------
+  bus MainBus       end MainBus;
+  bus PeripheralBus end PeripheralBus;
+  bus UIBus         end UIBus;
+
+  ------------------------------------------------------------------
+  -- 3. DEVICES
+  ------------------------------------------------------------------
+  device TouchScreen
+    features
+      sel_out : out data port TicketRequest;
+      disp_in : in  data port DisplayMessage;
+  end TouchScreen;
+
+  device CardReader
+    features
+      pay_out : out data port PaymentInfo;
+  end CardReader;
+
+  device CashAcceptor
+    features
+      pay_out : out data port PaymentInfo;
+  end CashAcceptor;
+
+  device PrinterDevice
+    features
+      ticket_in  : in  data port TicketData;
+      cmd_in     : in  data port PrintCommand;
+      status_out : out data port PaymentStatus;
+  end PrinterDevice;
+
+  device DisplayDevice
+    features
+      msg_in : in data port DisplayMessage;
+  end DisplayDevice;
+
+  device NetworkInterface
+    features
+      net_in : in event data port LogEntry;
+  end NetworkInterface;
+
+  ------------------------------------------------------------------
+  -- 4. PROCESSES
+  ------------------------------------------------------------------
+  process UserInputProc
+    features
+      sel_in         : in  data port TicketRequest;
+      sel_out        : out data port TicketRequest;
+      pay_status_in  : in  data port PaymentStatus;
+      disp_out       : out data port DisplayMessage;
+      log_out        : out event data port   LogEntry;
+  end UserInputProc;
+
+  process PaymentProc
+    features
+      sel_in        : in  data port TicketRequest;
+      pay1_in       : in  data port PaymentInfo;
+      pay2_in       : in  data port PaymentInfo;
+      ticket_out    : out data port TicketData;
+      pay_status_out: out data port PaymentStatus;
+       log_out        : out event data port   LogEntry; 
+  end PaymentProc;
+
+  process TicketProc
+    features
+      ticket_in      : in  data port TicketData;
+      prt_status_in  : in  data port PaymentStatus;
+      print_cmd_out  : out data port PrintCommand;
+       log_out        : out event data port   LogEntry;
+  end TicketProc;
+
+  process LoggerProc
+    features
+      log_in  : in  event data port   LogEntry;
+      log_out : out event data port   LogEntry;
+  end LoggerProc;
+
+  ------------------------------------------------------------------
+  -- 5. TOP‐LEVEL SYSTEM
+  ------------------------------------------------------------------
+  system Ticket_Machine
+  end Ticket_Machine;
+
+  system implementation Ticket_Machine.impl
+    subcomponents
+      ui_dev      : device  TouchScreen;
+      card_dev    : device  CardReader;
+      cash_dev    : device  CashAcceptor;
+      prt_dev     : device  PrinterDevice;
+      disp_dev    : device  DisplayDevice;
+      net_dev     : device  NetworkInterface;
+      ui_proc     : process UserInputProc;
+      pay_proc    : process PaymentProc;
+      ticket_proc : process TicketProc;
+      log_proc    : process LoggerProc;
+
+    connections
+      -- 1. TouchScreen → UserInputProc (selection)
+      c1  : port ui_dev.sel_out          -> ui_proc.sel_in;
+
+      -- 2. UserInputProc → PaymentProc (forward selection)
+      c2  : port ui_proc.sel_out         -> pay_proc.sel_in;
+
+      -- 3. CardReader/CashAcceptor → PaymentProc (payment info)
+      c3  : port card_dev.pay_out        -> pay_proc.pay1_in;
+      c4  : port cash_dev.pay_out        -> pay_proc.pay2_in;
+
+      -- 4. PaymentProc → UserInputProc (payment status)
+      c5  : port pay_proc.pay_status_out -> ui_proc.pay_status_in;
+
+      -- 5. UserInputProc → DisplayDevice (display message)
+      c6  : port ui_proc.disp_out        -> disp_dev.msg_in;
+
+      -- 6. PaymentProc → TicketProc (ticket data)
+      c7  : port pay_proc.ticket_out     -> ticket_proc.ticket_in;
+
+      -- 7. TicketProc → PrinterDevice (print command)
+      c8  : port ticket_proc.print_cmd_out -> prt_dev.cmd_in;
+
+      -- 8. PrinterDevice → TicketProc (print status)
+      c9  : port prt_dev.status_out      -> ticket_proc.prt_status_in;
+
+      -- 9. Any log → LoggerProc
+      c10 : port ui_proc.log_out         -> log_proc.log_in;
+      c11 : port pay_proc.log_out        -> log_proc.log_in;
+      c12 : port ticket_proc.log_out     -> log_proc.log_in;
+
+      -- 10. LoggerProc → NetworkInterface
+      c13 : port log_proc.log_out        -> net_dev.net_in;
+  end Ticket_Machine.impl;
+
+end ticket_machine_advanced;

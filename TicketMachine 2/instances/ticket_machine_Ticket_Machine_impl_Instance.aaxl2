@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="ASCII"?>
+<instance:SystemInstance xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aadl2="http://aadl.info/AADL/2.0" xmlns:instance="http://aadl.info/AADL/2.0/instance" name="Ticket_Machine_impl_Instance" category="system">
+  <componentInstance name="ui_dev" category="device">
+    <featureInstance name="sel_out" direction="out">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.10/@ownedDataPort.0"/>
+    </featureInstance>
+    <featureInstance name="disp_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.10/@ownedDataPort.1"/>
+    </featureInstance>
+    <subcomponent xsi:type="aadl2:DeviceSubcomponent" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedDeviceSubcomponent.0"/>
+    <index>0</index>
+    <classifier xsi:type="aadl2:DeviceType" href="../ticket_machine.aadl#ticket_machine_advanced.TouchScreen"/>
+  </componentInstance>
+  <componentInstance name="card_dev" category="device">
+    <featureInstance name="pay_out" direction="out">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.11/@ownedDataPort.0"/>
+    </featureInstance>
+    <subcomponent xsi:type="aadl2:DeviceSubcomponent" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedDeviceSubcomponent.1"/>
+    <index>0</index>
+    <classifier xsi:type="aadl2:DeviceType" href="../ticket_machine.aadl#ticket_machine_advanced.CardReader"/>
+  </componentInstance>
+  <componentInstance name="cash_dev" category="device">
+    <featureInstance name="pay_out" direction="out">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.12/@ownedDataPort.0"/>
+    </featureInstance>
+    <subcomponent xsi:type="aadl2:DeviceSubcomponent" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedDeviceSubcomponent.2"/>
+    <index>0</index>
+    <classifier xsi:type="aadl2:DeviceType" href="../ticket_machine.aadl#ticket_machine_advanced.CashAcceptor"/>
+  </componentInstance>
+  <componentInstance name="prt_dev" category="device">
+    <featureInstance name="ticket_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.13/@ownedDataPort.0"/>
+    </featureInstance>
+    <featureInstance name="cmd_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.13/@ownedDataPort.1"/>
+    </featureInstance>
+    <featureInstance name="status_out" direction="out">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.13/@ownedDataPort.2"/>
+    </featureInstance>
+    <subcomponent xsi:type="aadl2:DeviceSubcomponent" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedDeviceSubcomponent.3"/>
+    <index>0</index>
+    <classifier xsi:type="aadl2:DeviceType" href="../ticket_machine.aadl#ticket_machine_advanced.PrinterDevice"/>
+  </componentInstance>
+  <componentInstance name="disp_dev" category="device">
+    <featureInstance name="msg_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.14/@ownedDataPort.0"/>
+    </featureInstance>
+    <subcomponent xsi:type="aadl2:DeviceSubcomponent" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedDeviceSubcomponent.4"/>
+    <index>0</index>
+    <classifier xsi:type="aadl2:DeviceType" href="../ticket_machine.aadl#ticket_machine_advanced.DisplayDevice"/>
+  </componentInstance>
+  <componentInstance name="net_dev" category="device">
+    <featureInstance name="net_in" category="eventDataPort">
+      <feature xsi:type="aadl2:EventDataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.15/@ownedEventDataPort.0"/>
+    </featureInstance>
+    <subcomponent xsi:type="aadl2:DeviceSubcomponent" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedDeviceSubcomponent.5"/>
+    <index>0</index>
+    <classifier xsi:type="aadl2:DeviceType" href="../ticket_machine.aadl#ticket_machine_advanced.NetworkInterface"/>
+  </componentInstance>
+  <componentInstance name="ui_proc" category="process">
+    <featureInstance name="sel_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.16/@ownedDataPort.0"/>
+    </featureInstance>
+    <featureInstance name="sel_out" direction="out">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.16/@ownedDataPort.1"/>
+    </featureInstance>
+    <featureInstance name="pay_status_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.16/@ownedDataPort.2"/>
+    </featureInstance>
+    <featureInstance name="disp_out" direction="out">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.16/@ownedDataPort.3"/>
+    </featureInstance>
+    <featureInstance name="log_out" category="eventDataPort" direction="out">
+      <feature xsi:type="aadl2:EventDataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.16/@ownedEventDataPort.0"/>
+    </featureInstance>
+    <subcomponent xsi:type="aadl2:ProcessSubcomponent" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedProcessSubcomponent.0"/>
+    <index>0</index>
+    <classifier xsi:type="aadl2:ProcessType" href="../ticket_machine.aadl#ticket_machine_advanced.UserInputProc"/>
+  </componentInstance>
+  <componentInstance name="pay_proc" category="process">
+    <featureInstance name="sel_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.17/@ownedDataPort.0"/>
+    </featureInstance>
+    <featureInstance name="pay1_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.17/@ownedDataPort.1"/>
+    </featureInstance>
+    <featureInstance name="pay2_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.17/@ownedDataPort.2"/>
+    </featureInstance>
+    <featureInstance name="ticket_out" direction="out">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.17/@ownedDataPort.3"/>
+    </featureInstance>
+    <featureInstance name="pay_status_out" direction="out">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.17/@ownedDataPort.4"/>
+    </featureInstance>
+    <featureInstance name="log_out" category="eventDataPort" direction="out">
+      <feature xsi:type="aadl2:EventDataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.17/@ownedEventDataPort.0"/>
+    </featureInstance>
+    <subcomponent xsi:type="aadl2:ProcessSubcomponent" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedProcessSubcomponent.1"/>
+    <index>0</index>
+    <classifier xsi:type="aadl2:ProcessType" href="../ticket_machine.aadl#ticket_machine_advanced.PaymentProc"/>
+  </componentInstance>
+  <componentInstance name="ticket_proc" category="process">
+    <featureInstance name="ticket_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.18/@ownedDataPort.0"/>
+    </featureInstance>
+    <featureInstance name="prt_status_in">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.18/@ownedDataPort.1"/>
+    </featureInstance>
+    <featureInstance name="print_cmd_out" direction="out">
+      <feature xsi:type="aadl2:DataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.18/@ownedDataPort.2"/>
+    </featureInstance>
+    <featureInstance name="log_out" category="eventDataPort" direction="out">
+      <feature xsi:type="aadl2:EventDataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.18/@ownedEventDataPort.0"/>
+    </featureInstance>
+    <subcomponent xsi:type="aadl2:ProcessSubcomponent" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedProcessSubcomponent.2"/>
+    <index>0</index>
+    <classifier xsi:type="aadl2:ProcessType" href="../ticket_machine.aadl#ticket_machine_advanced.TicketProc"/>
+  </componentInstance>
+  <componentInstance name="log_proc" category="process">
+    <featureInstance name="log_in" category="eventDataPort">
+      <feature xsi:type="aadl2:EventDataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.19/@ownedEventDataPort.0"/>
+    </featureInstance>
+    <featureInstance name="log_out" category="eventDataPort" direction="out">
+      <feature xsi:type="aadl2:EventDataPort" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.19/@ownedEventDataPort.1"/>
+    </featureInstance>
+    <subcomponent xsi:type="aadl2:ProcessSubcomponent" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedProcessSubcomponent.3"/>
+    <index>0</index>
+    <classifier xsi:type="aadl2:ProcessType" href="../ticket_machine.aadl#ticket_machine_advanced.LoggerProc"/>
+  </componentInstance>
+  <connectionInstance name="ui_dev.sel_out -> ui_proc.sel_in" complete="true" kind="portConnection" destination="//@componentInstance.6/@featureInstance.0" source="//@componentInstance.0/@featureInstance.0">
+    <connectionReference context="/" source="//@componentInstance.0/@featureInstance.0" destination="//@componentInstance.6/@featureInstance.0">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.0"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="card_dev.pay_out -> pay_proc.pay1_in" complete="true" kind="portConnection" destination="//@componentInstance.7/@featureInstance.1" source="//@componentInstance.1/@featureInstance.0">
+    <connectionReference context="/" source="//@componentInstance.1/@featureInstance.0" destination="//@componentInstance.7/@featureInstance.1">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.2"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="cash_dev.pay_out -> pay_proc.pay2_in" complete="true" kind="portConnection" destination="//@componentInstance.7/@featureInstance.2" source="//@componentInstance.2/@featureInstance.0">
+    <connectionReference context="/" source="//@componentInstance.2/@featureInstance.0" destination="//@componentInstance.7/@featureInstance.2">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.3"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="prt_dev.status_out -> ticket_proc.prt_status_in" complete="true" kind="portConnection" destination="//@componentInstance.8/@featureInstance.1" source="//@componentInstance.3/@featureInstance.2">
+    <connectionReference context="/" source="//@componentInstance.3/@featureInstance.2" destination="//@componentInstance.8/@featureInstance.1">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.8"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="ui_proc.sel_out -> pay_proc.sel_in" complete="true" kind="portConnection" destination="//@componentInstance.7/@featureInstance.0" source="//@componentInstance.6/@featureInstance.1">
+    <connectionReference context="/" source="//@componentInstance.6/@featureInstance.1" destination="//@componentInstance.7/@featureInstance.0">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.1"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="ui_proc.disp_out -> disp_dev.msg_in" complete="true" kind="portConnection" destination="//@componentInstance.4/@featureInstance.0" source="//@componentInstance.6/@featureInstance.3">
+    <connectionReference context="/" source="//@componentInstance.6/@featureInstance.3" destination="//@componentInstance.4/@featureInstance.0">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.5"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="ui_proc.log_out -> log_proc.log_in" complete="true" kind="portConnection" destination="//@componentInstance.9/@featureInstance.0" source="//@componentInstance.6/@featureInstance.4">
+    <connectionReference context="/" source="//@componentInstance.6/@featureInstance.4" destination="//@componentInstance.9/@featureInstance.0">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.9"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="pay_proc.ticket_out -> ticket_proc.ticket_in" complete="true" kind="portConnection" destination="//@componentInstance.8/@featureInstance.0" source="//@componentInstance.7/@featureInstance.3">
+    <connectionReference context="/" source="//@componentInstance.7/@featureInstance.3" destination="//@componentInstance.8/@featureInstance.0">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.6"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="pay_proc.pay_status_out -> ui_proc.pay_status_in" complete="true" kind="portConnection" destination="//@componentInstance.6/@featureInstance.2" source="//@componentInstance.7/@featureInstance.4">
+    <connectionReference context="/" source="//@componentInstance.7/@featureInstance.4" destination="//@componentInstance.6/@featureInstance.2">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.4"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="pay_proc.log_out -> log_proc.log_in" complete="true" kind="portConnection" destination="//@componentInstance.9/@featureInstance.0" source="//@componentInstance.7/@featureInstance.5">
+    <connectionReference context="/" source="//@componentInstance.7/@featureInstance.5" destination="//@componentInstance.9/@featureInstance.0">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.10"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="ticket_proc.print_cmd_out -> prt_dev.cmd_in" complete="true" kind="portConnection" destination="//@componentInstance.3/@featureInstance.1" source="//@componentInstance.8/@featureInstance.2">
+    <connectionReference context="/" source="//@componentInstance.8/@featureInstance.2" destination="//@componentInstance.3/@featureInstance.1">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.7"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="ticket_proc.log_out -> log_proc.log_in" complete="true" kind="portConnection" destination="//@componentInstance.9/@featureInstance.0" source="//@componentInstance.8/@featureInstance.3">
+    <connectionReference context="/" source="//@componentInstance.8/@featureInstance.3" destination="//@componentInstance.9/@featureInstance.0">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.11"/>
+    </connectionReference>
+  </connectionInstance>
+  <connectionInstance name="log_proc.log_out -> net_dev.net_in" complete="true" kind="portConnection" destination="//@componentInstance.5/@featureInstance.0" source="//@componentInstance.9/@featureInstance.1">
+    <connectionReference context="/" source="//@componentInstance.9/@featureInstance.1" destination="//@componentInstance.5/@featureInstance.0">
+      <connection xsi:type="aadl2:PortConnection" href="../ticket_machine.aadl#/0/@ownedPublicSection/@ownedClassifier.21/@ownedPortConnection.12"/>
+    </connectionReference>
+  </connectionInstance>
+  <systemOperationMode name="No Modes"/>
+  <componentImplementation xsi:type="aadl2:SystemImplementation" href="../ticket_machine.aadl#ticket_machine_advanced.Ticket_Machine.impl"/>
+</instance:SystemInstance>
